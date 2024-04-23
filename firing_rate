@@ -1,7 +1,0 @@
-Firing Rate Calculator
-This Python script contains a class FiringRateCalculator that connects to the OmniPlex Server and calculates the firing rates of units in real-time.
-
-Class: FiringRateCalculator
-Initialization
-The class is initialized with an optional time_slot_duration parameter (default is 1000 milliseconds). This parameter determines the duration of the time slot for which the firing rates are calculated.
-
