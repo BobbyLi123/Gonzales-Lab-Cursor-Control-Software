@@ -1,99 +1,72 @@
-# Class: FiringRateCalculator
-
-## Initialization
-
-The class is initialized with an optional `time_slot_duration` parameter (default is 1000 milliseconds). This parameter determines the duration of the time slot for which the firing rates are calculated.
-
-```python
-calculator = FiringRateCalculator(time_slot_duration=1000)
-```
-
-## Method: connect
-This method connects to the OmniPlex Server. If the connection is successful, it prints the source of the keyboard events.
-
-```python
-calculator.connect()
-```
-
-Method: calculate_firing_rates
-This method is a generator that continuously calculates and yields the firing rates of units. The firing rates are calculated for each time slot and are returned as a dictionary where the keys are the units and the values are the firing rates.
-
-```python
-for firing_rates in calculator.calculate_firing_rates():
-    print(firing_rates)
-```
-
-Usage
-To use this class in your larger program, you can import it and create an instance of it. Then, you can call the connect method to connect to the OmniPlex Server and the calculate_firing_rates method to get the real-time firing rates.
-
-```python
-from firing_rate_class import FiringRateCalculator
-
-calculator = FiringRateCalculator()
-calculator.connect()
-for firing_rates in calculator.calculate_firing_rates():
-    # Use firing_rates to control the cursor
-    ...
-```
-
-This will continuously calculate and yield firing rates until you stop the loop.
-
-# Brain Computer Interface Game
+# Brain Computer Interface Toolkit
 
 ## Description
-This project features a Brain-Computer Interface (BCI) game that uses neural data to control the movement of a cursor on the screen towards a target. The application utilizes the `PyOPXClientAPI` for handling neural data and `tkinter` for the graphical user interface.
+This Brain Computer Interface (BCI) Toolkit provides tools to interface with neural data through the OmniPlex Server using the PyOPXClientAPI. It includes two primary applications: a game that uses neural data to control cursor movement and a utility for calculating firing rates of neural groups.
 
 ## Installation
 
 1. **Library Dependencies**:
-   Before running the game, install the necessary Python libraries using pip:
+   Install the required Python libraries using pip:
    ```bash
-   pip install tkinter
+   pip install tkinter matplotlib numpy
    ```
 
 2. **Plexon and PyOPXClient SDK**:
-   Ensure that Plexon and the PyOPXClient SDK for Python are installed and configured on your system to handle real-time acquisition of neural data. Installation guides and support can be found on the [Plexon website](https://plexon.com/).
+   Ensure Plexon and the PyOPXClient SDK for Python are installed and properly configured on your system for real-time neural data acquisition. For installation guides and support, visit the [Plexon website](https://plexon.com/).
 
 3. **Clone Repository**:
-   Clone this repository to your local machine using:
+   Clone the repository to your local machine:
    ```bash
    git clone <repository-url>
    ```
 
-## Setup and Running the Game
+## Setup and Running the Components
 
-1. **Start OmniPlex Server**:
-   Begin by starting the OmniPlex Server and PlexControl with a valid configuration to ensure that neural data can be processed in real-time.
+### Game (`game.py`)
+#### Running the Game
+- **Start OmniPlex Server**: Ensure that the OmniPlex Server and PlexControl are running with a valid configuration.
+- **Launch the Game**: Navigate to the project directory in a command prompt or terminal and execute:
+  ```bash
+  python game.py
+  ```
+  Follow the on-screen prompts to configure neural data groups and control settings. The game interface will appear subsequently.
 
-2. **Navigate to the PyOPXClient Folder**:
-   Open a command prompt window, navigate to the folder containing the `PyOPXClient` installation, and then proceed to the directory of the cloned game script.
+#### Game Controls and Mechanics
+- **Start Button**: Click to begin the game. The cursor will appear and start moving based on the neural data input.
+- **Reverse Button**: Click to swap the neural groups controlling upward and downward movements. This allows dynamic control adjustments during gameplay.
+- **Cursor Movement**: Controlled by the difference in spike densities between two designated neural groups. The cursor moves toward a target displayed on the screen.
 
-3. **Run the Game**:
-   Execute the game by running:
-   ```bash
-   python bci_game.py
-   ```
-   Follow the on-screen prompts to configure the number of neural data groups, specify units for each group, and assign groups for upward and downward movements. The game window will open after these configurations, and you can start playing by clicking the "Start" button.
+#### How It Works
+The game calculates cursor movement using spike density differences from two neural groups specified for upward and downward movements. The spike density is computed by averaging the number of spikes over a 10-second window, normalized by the number of channels, providing a smoothed representation of neural activity influencing the cursor’s motion.
 
-### Game Controls:
-- **Start Button**: Initiates the game session.
-- **Reverse Button**: Switches the control groups for upward and downward movements.
+### Firing Rate Calculation (`firing_rate_calculation.py`)
+#### Usage
+- **Ensure OmniPlex Server Connectivity**: Check that the OmniPlex Server is connected, as this script interfaces directly with it.
+- **Execute the Script**: Run the script by executing:
+  ```bash
+  python firing_rate_calculation.py
+  ```
+  Enter the number of groups and their units when prompted. The script will continuously compute and display firing rates.
 
-### How It Works:
-The cursor's movement is controlled by the differences in spike density between the designated neural groups assigned to move the cursor upward and downward. The goal is to align the cursor with a target placed randomly on the screen.
+#### Spiking Rate Calculation
+The firing rate for each group is calculated by dividing the total number of spikes by the product of the number of channels and the duration of the measurement window. This rate is expressed in Hertz (Hz) and provides insights into the neural activity of each group.
 
 ## Features
-- **Real-time Neural Data Integration**: Utilizes the PyOPXClientAPI for fetching and processing neural data in real-time.
-- **Adaptive Difficulty**: Adjusts cursor movement speed based on calculated average speeds to balance game difficulty.
-- **Interactive GUI**: Offers visual feedback for cursor and target positions and includes controls to adjust movement directions.
+- **Real-time Neural Data Processing**: Both components use PyOPXClientAPI for real-time data fetching and processing.
+- **Interactive GUI in Game**: Provides a user-friendly interface where the cursor is controlled through neural signals.
+- **Dynamic Data Analysis**: The firing rate calculator processes and displays neural firing rates, aiding in scientific studies and demonstrations.
 
 ## Contributing
-To contribute to this project:
+Contributors are encouraged to submit improvements or bug fixes through the following process:
 1. Fork the repository.
-2. Create a new branch for your feature or fix.
-3. Commit your changes.
+2. Create a new branch for your changes.
+3. Commit your modifications.
 4. Push to your branch.
-5. Submit a pull request for review.
+5. Create a pull request for review.
 
 ## License
 This project is licensed to Runda Li, Gonzalas Lab at Vanderbilt University.
+
+---
+
+For detailed information on installation, setup, and operation, refer to the project documentation or raise an issue on the GitHub repository. Explore neural data with this comprehensive BCI Toolkit!
