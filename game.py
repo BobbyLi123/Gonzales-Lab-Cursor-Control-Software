@@ -5,6 +5,7 @@ import time
 import collections
 from collections import deque
 import threading
+from tkinter import Label, Button
 
 class Game:
     def __init__(self, client, num_groups, groups, up_group, down_group, time_slot_duration):
@@ -31,6 +32,18 @@ class Game:
         self.target = None
         self.running = False
         self.thread = None
+        self.up_group_label = Label(self.root, text=f"Upward Group: {up_group}, Units: {groups[up_group]}")
+        self.up_group_label.pack()
+        self.down_group_label = Label(self.root, text=f"Downward Group: {down_group}, Units: {groups[down_group]}")
+        self.down_group_label.pack()
+        self.reverse_button = Button(self.root, text="Reverse", command=self.reverse_groups)
+        self.reverse_button.pack()
+
+    def reverse_groups(self):
+        self.up_group, self.down_group = self.down_group, self.up_group
+        self.up_group_label.config(text=f"Upward Group: {self.up_group}, Units: {self.groups[self.up_group]}")
+        self.down_group_label.config(text=f"Downward Group: {self.down_group}, Units: {self.groups[self.down_group]}")
+        print("Reversed, Up Group: ", self.up_group, "Down Group: ", self.down_group)
 
     def start_game(self):
         self.running = True
@@ -49,7 +62,7 @@ class Game:
         else:
             self.target_position = random.randint(int(self.cursor_position + 20), 600)
         self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='blue')
-        self.target = self.cursor.create_oval(395, self.target_position, 405, self.target_position + 10, fill='red')
+        self.target = self.cursor.create_oval(390, self.target_position - 5, 410, self.target_position + 15, fill='red')
         if self.thread is not None and self.thread.is_alive():
             self.running = False
             self.thread.join()
