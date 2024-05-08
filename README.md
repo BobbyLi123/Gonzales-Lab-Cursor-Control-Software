@@ -1,9 +1,6 @@
-# CursorControlPlexon
-A cursor control system using firing rate, based on Plexon
+# Class: FiringRateCalculator
 
-## Class: FiringRateCalculator
-
-### Initialization
+## Initialization
 
 The class is initialized with an optional `time_slot_duration` parameter (default is 1000 milliseconds). This parameter determines the duration of the time slot for which the firing rates are calculated.
 
@@ -11,7 +8,7 @@ The class is initialized with an optional `time_slot_duration` parameter (defaul
 calculator = FiringRateCalculator(time_slot_duration=1000)
 ```
 
-### Method: connect
+## Method: connect
 This method connects to the OmniPlex Server. If the connection is successful, it prints the source of the keyboard events.
 
 ```python
