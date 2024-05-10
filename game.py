@@ -38,6 +38,7 @@ class Game:
         self.down_group_label.pack()
         self.reverse_button = Button(self.root, text="Reverse", command=self.reverse_groups)
         self.reverse_button.pack()
+        self.first_batch = True
 
     def reverse_groups(self):
         self.up_group, self.down_group = self.down_group, self.up_group
@@ -81,6 +82,9 @@ class Game:
             avg_spike_density = {group: 0 for group in range(1, self.num_groups+1)}
             time.sleep(self.time_slot_duration/1000.0)
             new_data = self.client.get_new_data(timestamps_only=True)
+            if self.first_batch:
+                self.first_batch = False
+                continue
             for i in range(new_data.num_timestamps):
                 unit = new_data.unit[i]
                 for group, units in self.groups.items():
@@ -90,9 +94,9 @@ class Game:
             for group, timestamps in group_timestamps.items():
                 duration = self.time_slot_duration / 1000.0
                 num_channels = max(len(group_channels[group]), 1)
-                # print("Number of group_channels: ", num_channels)
+                print("Number of group_channels: ", num_channels)
                 spike_density = len(timestamps) / (num_channels * duration)
-                # print ("Spike density for group {}: {} Hz".format(group, spike_density))
+                print ("Spike density for group {}: {} Hz".format(group, spike_density))
                 self.group_spike_densities[group].append(spike_density)
                 avg_spike_density[group] = sum(self.group_spike_densities[group]) / len(self.group_spike_densities[group])
             # print("Group Spike Densities: ", self.group_spike_densities)
@@ -107,10 +111,10 @@ class Game:
             print("spike density for down group: ", avg_spike_density[self.down_group])
             if density_difference > 0:
                 self.cursor_position = max(self.cursor_position - speed * speed_scaling_factor, 0)  # Move up
-                print("Moving up with speed: ", speed)
+                print("Moving up with speed: ", speed * speed_scaling_factor)
             else:
                 self.cursor_position = min(self.cursor_position + speed * speed_scaling_factor, 600)  # Move down
-                print("Moving down with speed: ", speed)
+                print("Moving down with speed: ", speed * speed_scaling_factor)
             self.cursor.delete(self.cursor_item)
             self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='blue')
             if abs(self.cursor_position - self.target_position) <= 10:
