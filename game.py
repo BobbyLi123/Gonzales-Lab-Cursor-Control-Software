@@ -1,6 +1,7 @@
 from pyopxclient import PyOPXClientAPI, OPX_ERROR_NOERROR
 import tkinter as tk
 import random
+from tkinter import Canvas
 import time
 import collections
 from collections import deque
@@ -13,7 +14,7 @@ class Game:
         self.root.geometry("800x600")
         self.start_button = tk.Button(self.root, text="Start", command=self.start_game)
         self.start_button.pack()
-        self.cursor = tk.Canvas(self.root, width=800, height=600, bg='white')
+        self.cursor = Canvas(self.root, width=800, height=600, bg='black')
         self.cursor.pack()
         self.cursor_position = 300  # Set the initial cursor position to the middle of the screen
         self.target_position = None  # The target position will be set when the game starts
@@ -62,7 +63,7 @@ class Game:
             self.target_position = random.randint(0, max(int(self.cursor_position - 20), 0))
         else:
             self.target_position = random.randint(int(self.cursor_position + 20), 600)
-        self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='blue')
+        self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='white')
         self.target = self.cursor.create_oval(390, self.target_position - 5, 410, self.target_position + 15, fill='red')
         if self.thread is not None and self.thread.is_alive():
             self.running = False
@@ -110,13 +111,21 @@ class Game:
             print("spike density for up group: ", avg_spike_density[self.up_group])
             print("spike density for down group: ", avg_spike_density[self.down_group])
             if density_difference > 0:
-                self.cursor_position = max(self.cursor_position - speed * speed_scaling_factor, 0)  # Move up
+                new_position = max(self.cursor_position - speed * speed_scaling_factor, 0)  # Calculate new position
+                if self.cursor_position > self.target_position >= new_position:  # Check if cursor would pass target
+                    self.end_game()
+                else:
+                    self.cursor_position = new_position  # Update position
                 print("Moving up with speed: ", speed * speed_scaling_factor)
             else:
-                self.cursor_position = min(self.cursor_position + speed * speed_scaling_factor, 600)  # Move down
+                new_position = min(self.cursor_position + speed * speed_scaling_factor, 600)  # Calculate new position
+                if self.cursor_position < self.target_position <= new_position:  # Check if cursor would pass target
+                    self.end_game()
+                else:
+                    self.cursor_position = new_position  # Update position
                 print("Moving down with speed: ", speed * speed_scaling_factor)
             self.cursor.delete(self.cursor_item)
-            self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='blue')
+            self.cursor_item = self.cursor.create_polygon(400, self.cursor_position, 390, self.cursor_position + 20, 410, self.cursor_position + 20, fill='white')
             if abs(self.cursor_position - self.target_position) <= 10:
                 self.end_game()
                 self.running = False
