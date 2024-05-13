@@ -25,7 +25,7 @@ class Game:
         self.up_group = up_group
         self.down_group = down_group
         self.time_slot_duration = time_slot_duration
-        self.group_spike_densities = {group: deque(maxlen=10) for group in range(1, num_groups + 1)}
+        self.group_spike_densities = {group: deque(maxlen= int( 10/(time_slot_duration / 1000.0))) for group in range(1, num_groups + 1)}
         self.speeds = collections.deque(maxlen=100)  # Store the last 100 speeds
         self.last_move_time = time.time()
         self.end_text = None
@@ -103,11 +103,14 @@ class Game:
             # print("Group Spike Densities: ", self.group_spike_densities)
             # print("Up Group: ", self.up_group)
             density_difference = avg_spike_density[self.up_group] - avg_spike_density[self.down_group]
-            speed = abs(density_difference) * 10  # Calculate the speed
-            self.speeds.append(speed)  # Add the speed to the deque
-            average_speed = sum(self.speeds) / len(self.speeds)  # Calculate the average speed
-            speed_scaling_factor = 10 / average_speed if average_speed != 0 else 1  # Adjust the scaling factor based on the average speed
-            print("current time:", time.time()-self.start_time)
+            speed = abs(density_difference) * (0.1 / duration)  # Calculate the speed
+            if len(self.speeds) > 100:  # Adjust average speed calculation
+                self.speeds.popleft()
+            if speed != 0:
+                self.speeds.append(speed)  # Add the speed to the deque
+            average_speed = sum(self.speeds) / len(self.speeds) if len(self.speeds) != 0 else 1 # Calculate the average speed
+            speed_scaling_factor = 10 * duration / (average_speed) if average_speed != 0 else 1  # Adjust the scaling factor based on the average speed
+            print("current time:", time.time() - self.start_time)
             print("spike density for up group: ", avg_spike_density[self.up_group])
             print("spike density for down group: ", avg_spike_density[self.down_group])
             if density_difference > 0:
@@ -155,7 +158,7 @@ if __name__ == "__main__":
         groups[i+1] = units
     up_group = int(input("Enter the group number that controls moving up: "))
     down_group = int(input("Enter the group number that controls moving down: "))
-    time_slot_duration = 1000  
+    time_slot_duration = 100  
     # print(up_group, down_group)
     game = Game(client, num_groups, groups, up_group, down_group, time_slot_duration)
     game.root.mainloop()
